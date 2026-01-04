@@ -1,4 +1,4 @@
-package com.xn.xny;
+package com.xn.lmx;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
