@@ -11,8 +11,9 @@ public class TestController {
         return "pong";
     }
 
-    @GetMapping("/get")
-    public String get() {
-        return "Welcome using this test get method";
+    @GetMapping("/DataBaseSearch")
+    public String DataBaseSearch() {
+        return "DataBaseSearch.html";
     }
+
 }
