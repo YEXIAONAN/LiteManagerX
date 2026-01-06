@@ -10,4 +10,9 @@ public class TestController {
     public String ping() {
         return "pong";
     }
+
+    @GetMapping("/get")
+    public String get() {
+        return "Welcome using this test get method";
+    }
 }
