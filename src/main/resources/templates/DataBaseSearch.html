@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>LiteManagerX · 数据库自查询</title>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+            background: #f6f8fa;
+            margin: 0;
+            padding: 30px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .panel {
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,.06);
+            flex: 1;
+            overflow: auto;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            font-size: 16px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            padding: 6px 8px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        li:hover {
+            background: #e6f0ff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 6px 8px;
+            white-space: nowrap;
+        }
+
+        th {
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+
+<h1>LiteManagerX · 数据库自查询</h1>
+
+<div class="container">
+    <div class="panel">
+        <h2>数据库</h2>
+        <ul id="dbList"></ul>
+    </div>
+
+    <div class="panel">
+        <h2>表结构</h2>
+        <ul id="tableList"></ul>
+    </div>
+
+    <div class="panel">
+        <h2>表数据</h2>
+        <div id="tableData"></div>
+    </div>
+</div>
+
+<script>
+    let currentDb = null;
+
+    // 1. 加载数据库列表
+    fetch('/get/databases')
+        .then(res => res.json())
+        .then(dbs => {
+            const ul = document.getElementById('dbList');
+            dbs.forEach(db => {
+                const li = document.createElement('li');
+                li.textContent = db;
+                li.onclick = () => loadTables(db);
+                ul.appendChild(li);
+            });
+        });
+
+    // 2. 加载表结构
+    function loadTables(dbName) {
+        currentDb = dbName;
+        document.getElementById('tableList').innerHTML = '';
+        document.getElementById('tableData').innerHTML = '';
+
+        fetch(`/get/${dbName}/info`)
+            .then(res => res.json())
+            .then(columns => {
+                const tables = [...new Set(columns.map(c => c.TABLE_NAME))];
+                const ul = document.getElementById('tableList');
+
+                tables.forEach(table => {
+                    const li = document.createElement('li');
+                    li.textContent = table;
+                    li.onclick = () => loadTableData(table);
+                    ul.appendChild(li);
+                });
+            });
+    }
+
+    // 3. 加载表数据
+    function loadTableData(tableName) {
+        fetch(`/get/${currentDb}/data/${tableName}`)
+            .then(res => res.json())
+            .then(rows => {
+                const container = document.getElementById('tableData');
+                container.innerHTML = '';
+
+                if (rows.length === 0) {
+                    container.textContent = '无数据';
+                    return;
+                }
+
+                const table = document.createElement('table');
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+
+                Object.keys(rows[0]).forEach(key => {
+                    const th = document.createElement('th');
+                    th.textContent = key;
+                    headerRow.appendChild(th);
+                });
+
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+
+                const tbody = document.createElement('tbody');
+                rows.forEach(row => {
+                    const tr = document.createElement('tr');
+                    Object.values(row).forEach(val => {
+                        const td = document.createElement('td');
+                        td.textContent = val;
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+
+                table.appendChild(tbody);
+                container.appendChild(table);
+            });
+    }
+</script>
+
+</body>
+</html>
