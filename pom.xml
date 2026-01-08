@@ -15,7 +15,7 @@
 	</parent>
 
 	<groupId>com.xn</groupId>
-	<artifactId>xny</artifactId>
+	<artifactId>lmx</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>LiteManagerX</name>
 	<description>Spring Boot Web 项目，提供数据库查询接口</description>
