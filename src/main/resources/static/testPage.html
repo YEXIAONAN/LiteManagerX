@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TestPage</title>
+</head>
+<body>
+
+<script>
+    (async () => {
+      const res = await fetch("http://localhost:8080/test").then(res => res.text())
+      document.body.innerHTML = res
+    })()
+</script>
+
+</body>
+</html>
