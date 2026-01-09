@@ -1,336 +1,48 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>LiteManagerX</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    :root {
-      --primary-blue: #1e6bb8;
-      --secondary-blue: #3498db;
-      --light-blue: #e6f2ff;
-      --accent-blue: #2c80c9;
-      --dark-blue: #0d4a8a;
-      --white: #ffffff;
-      --light-gray: #f8fafc;
-      --medium-gray: #eef2f7;
-      --text-dark: #2c3e50;
-      --text-light: #5a6c7d;
-      --shadow: rgba(30, 107, 184, 0.1);
-    }
-
-    * {
-      box-sizing: border-box;
-      transition: all 0.3s ease;
-    }
-
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: linear-gradient(135deg, #f5f9ff 0%, #e6f2ff 100%);
-      color: var(--text-dark);
-      line-height: 1.6;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 30px 20px;
-    }
-
-    header {
-      text-align: center;
-      padding: 60px 0 40px;
-      background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
-      color: var(--white);
-      border-radius: 0 0 30px 30px;
-      margin-bottom: 50px;
-      box-shadow: 0 10px 30px var(--shadow);
-    }
-
-    h1 {
-      font-size: 3.5rem;
-      margin-bottom: 10px;
-      letter-spacing: 1px;
-      font-weight: 700;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .subtitle {
-      font-size: 1.2rem;
-      opacity: 0.95;
-      max-width: 800px;
-      margin: 0 auto 30px;
-      line-height: 1.6;
-    }
-
-    .highlight {
-      background-color: rgba(255, 255, 255, 0.2);
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-weight: 600;
-    }
-
-    .card {
-      background: var(--white);
-      border-radius: 16px;
-      padding: 40px;
-      margin-bottom: 30px;
-      box-shadow: 0 8px 30px var(--shadow);
-      border-left: 5px solid var(--primary-blue);
-    }
-
-    .card h2 {
-      margin-top: 0;
-      font-size: 28px;
-      margin-bottom: 20px;
-      color: var(--primary-blue);
-      position: relative;
-      padding-bottom: 10px;
-    }
-
-    .card h2:after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 60px;
-      height: 4px;
-      background: var(--secondary-blue);
-      border-radius: 2px;
-    }
-
-    .card p {
-      line-height: 1.8;
-      font-size: 17px;
-      color: var(--text-light);
-    }
-
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 25px;
-      margin-top: 20px;
-    }
-
-    .feature {
-      background: var(--light-gray);
-      border-radius: 12px;
-      padding: 25px;
-      border-top: 4px solid var(--secondary-blue);
-      transition: transform 0.3s ease;
-    }
-
-    .feature:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 15px 30px rgba(52, 152, 219, 0.15);
-    }
-
-    .feature h3 {
-      margin-top: 0;
-      font-size: 20px;
-      margin-bottom: 15px;
-      color: var(--primary-blue);
-    }
-
-    .feature p {
-      font-size: 15px;
-      line-height: 1.7;
-    }
-
-    .tech-stack {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-top: 20px;
-    }
-
-    .tech-item {
-      background: var(--light-blue);
-      color: var(--primary-blue);
-      padding: 12px 20px;
-      border-radius: 50px;
-      font-weight: 600;
-      border: 1px solid rgba(30, 107, 184, 0.2);
-    }
-
-    .links {
-      margin-top: 40px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    .btn {
-      text-decoration: none;
-      color: var(--white);
-      background: linear-gradient(to right, var(--primary-blue), var(--accent-blue));
-      padding: 15px 30px;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 16px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 5px 15px rgba(30, 107, 184, 0.3);
-      transition: all 0.3s ease;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(30, 107, 184, 0.4);
-      background: linear-gradient(to right, var(--accent-blue), var(--primary-blue));
-    }
-
-    .btn.secondary {
-      background: var(--white);
-      color: var(--primary-blue);
-      border: 2px solid var(--primary-blue);
-    }
-
-    .btn.secondary:hover {
-      background: var(--primary-blue);
-      color: var(--white);
-    }
-
-    footer {
-      margin-top: 80px;
-      text-align: center;
-      font-size: 15px;
-      color: var(--text-light);
-      padding: 30px;
-      border-top: 1px solid var(--medium-gray);
-      background: var(--light-gray);
-      border-radius: 20px 20px 0 0;
-    }
-
-    .developer-info {
-      margin-top: 10px;
-      font-weight: 600;
-      color: var(--primary-blue);
-    }
-
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 2.5rem;
-      }
-
-      .container {
-        padding: 20px 15px;
-      }
-
-      .card {
-        padding: 25px;
-      }
-
-      .features {
-        grid-template-columns: 1fr;
-      }
-
-      .links {
-        justify-content: center;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/1.css}">
 </head>
 <body>
-<header>
-  <div class="container">
-    <h1>LiteManagerX</h1>
-    <div class="subtitle">
-      Lite Manager X（简称 <span class="highlight">LMX</span>）是一个用于<strong>统一接入、规范管理和集中处理请求</strong>的轻量级管理平台，主要解决多接口、多模块场景下请求分散、命名混乱、维护成本高的问题。
+    <div>
+    <h2>介绍</h2>
+    <h4>Lite Manager X（简称 LMX）是一个用于统一接入、规范管理和集中处理请求的轻量级管理平台，主要解决多接口、多模块场景下请求分散、命名混乱、维护成本高的问题。</h4>
+    <h4>LMX 关注结构统一、规范先行和工程可维护性，而不是功能堆叠。</h4>
     </div>
-  </div>
-</header>
-
-<div class="container">
-  <div class="card">
-    <h2>项目简介</h2>
-    <p>
-      LiteManagerX 是一个基于 Spring Boot 构建的轻量级 Web 管理服务，
-      旨在提供统一、直观的数据库信息查询接口。
-      项目专注于"简单、清晰、可维护"，
-      通过 REST API 的形式快速获取数据库结构与数据内容，
-      适合作为内部工具、学习项目或二次开发的基础框架。
-    </p>
-<!--    <p>-->
-<!--      本项目由 <strong style="color: var(&#45;&#45;primary-blue);">Waiting独立开发</strong>，-->
-<!--      从架构设计、后端实现到前端页面均由个人完成。-->
-<!--    </p>-->
-  </div>
-
-  <div class="card">
-    <h2>核心功能</h2>
-    <div class="features">
-      <div class="feature">
-        <h3>数据库列表查询</h3>
-        <p>
-          通过统一接口获取当前 MySQL 实例中的所有数据库名称，
-          快速掌握整体数据结构。
-        </p>
-      </div>
-      <div class="feature">
-        <h3>表结构信息</h3>
-        <p>
-          基于 INFORMATION_SCHEMA，
-          动态查询指定数据库下的表与字段信息，
-          包括字段类型、主键信息等。
-        </p>
-      </div>
-      <div class="feature">
-        <h3>表数据访问</h3>
-        <p>
-          支持直接读取指定表中的全部数据，
-          方便调试、学习和快速验证数据内容。
-        </p>
-      </div>
-      <div class="feature">
-        <h3>轻量 & 可扩展</h3>
-        <p>
-          不依赖复杂中间件，
-          代码结构清晰，便于后续扩展权限控制、
-          前端界面或更多数据源支持。
-        </p>
-      </div>
+    <h4>强大</h4>
+    <div>
+        <ul>
+            <li>基于主流 Web 技术栈构建</li>
+            <li>后端采用 Spring Boot 作为核心服务框架</li>
+            <li>统一接收前端或第三方请求，并进行集中处理与调度</li>
+        </ul>
     </div>
-  </div>
-
-  <div class="card">
-    <h2>技术栈</h2>
-    <p>
-      采用现代化技术栈，确保项目的高效性和可维护性：
-    </p>
-    <div class="tech-stack">
-      <div class="tech-item">Spring Boot</div>
-      <div class="tech-item">JdbcTemplate</div>
-      <div class="tech-item">MySQL</div>
-      <div class="tech-item">HTML5/CSS3</div>
-      <div class="tech-item">JavaScript</div>
-      <div class="tech-item">Maven</div>
+    <h4>易用</h4>
+    <div>
+        <ul>
+            <li>提供 Docker 化部署方案</li>
+            <li>支持 macOS / Windows / Linux</li>
+            <li>无需复杂环境配置，可快速启动并运行</li>
+        </ul>
     </div>
-  </div>
+    <h4>统一</h4>
+    <div>
+        <ul>
+            <li>LMX 强调通过规范减少混乱，通过结构降低维护成本。</li>
+        </ul>
+    </div>
+    <h4>启动项目（配置数据库）</h4>
+    <div>
+        <ul>
+            <li>todo：......</li>
+            <h5>请求路径规范</h5>
+            <li>使用小写字母</li>
+            <li>单词之间使用中划线 -</li>
+            <li>路径体现资源与行为语义</li>
+        </ul>
+    </div>
 
-  <div class="links">
-    <a class="btn" href="https://github.com/YEXIAONAN/LiteManagerX" target="_blank">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white" style="margin-right: 8px;">
-        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-      </svg>
-      GitHub 仓库
-    </a>
-    <a class="btn secondary" href="/DatabaseSearch.html">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px;">
-        <path d="M23.822 20.88l-6.353-6.354c.93-1.465 1.467-3.2 1.467-5.059.001-5.219-4.247-9.467-9.468-9.467s-9.468 4.248-9.468 9.468c0 5.221 4.247 9.469 9.468 9.469 1.879 0 3.628-.551 5.097-1.5l6.326 6.326 3.535-3.535-3.535-3.535zm-20.294-11.412c0-3.273 2.665-5.938 5.939-5.938 3.275 0 5.94 2.664 5.94 5.938 0 3.275-2.665 5.939-5.94 5.939-3.274 0-5.939-2.664-5.939-5.939z"/>
-      </svg>
-      数据库查询界面
-    </a>
-  </div>
-
-  <footer>
-    <p>© 2026 LiteManagerX · 轻量级管理平台</p>
-    <p class="developer-info">由 Waiting 独立开发</p>
-  </footer>
-</div>
 </body>
 </html>
