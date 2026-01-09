@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script th:src="@{/js/main.js}"></script>
     <style>
-                /* ===== 霓虹玻璃令牌 ===== */
+        /* ===== 霓虹玻璃令牌 ===== */
         :root{
           --bg:#000;
           --bg-light:#0a0a0a;
@@ -97,9 +97,6 @@
         .modal-title{font-size:18px;font-weight:600;letter-spacing:1px;background:linear-gradient(90deg,var(--accent),var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
         .modal-close{background:0 0;border:0;font-size:24px;color:var(--text);cursor:pointer;transition:var(--transition);}
         .modal-close:hover{color:var(--accent);}
-        .form-group{margin-bottom:16px;}
-        .form-label{font-size:13px;color:var(--text-dark);margin-bottom:6px;display:block;}
-        .form-control{width:100%;padding:12px 14px;background:transparent;border:1px solid var(--line);border-radius:var(--radius);color:var(--text);font-size:14px;transition:var(--transition);}
         .form-control:focus{outline:none;border-color:var(--primary);box-shadow:0 0 8px var(--primary);}
 
         /* 移动端 */
@@ -109,6 +106,55 @@
           .menu-toggle{display:block;}
         }
         .menu-toggle{display:none;font-size:20px;background:0 0;border:0;color:var(--primary);cursor:pointer;}
+        .form-control{
+          width:100%;padding:14px 16px;background:transparent;
+          border:1px solid var(--line);border-radius:var(--radius);
+          color:var(--text);font-size:16px;transition:border-color .3s;
+        }
+        .form-control:focus{outline:none;border-color:var(--primary);}
+        /* ===== 霓虹悬浮字段 ===== */
+        .field{
+          position:relative;
+          display:block;
+          margin-bottom:20px;
+        }
+        .field__input{
+          width:100%;
+          padding:22px 16px 8px;   /* 顶部留 22 px，label 缩上去后不再挡字 */
+          background:transparent;
+          border:1px solid var(--line);
+          border-radius:var(--radius);
+          color:var(--text);
+          font-size:16px;
+          transition:border-color .3s;
+        }
+        .field__input::placeholder{          /* 正常 placeholder，空时可见 */
+          color:transparent;                 /* 我们用 label 做提示，这里隐藏 */
+        }
+        .field__input:focus{
+          outline:none;
+          border-color:var(--primary);
+          box-shadow:0 0 8px var(--primary);
+        }
+        .field__label{
+          position:absolute;
+          left:16px;
+          top:50%;
+          translate:0 -50%;
+          color:var(--text-dark);
+          font-size:16px;
+          pointer-events:none;
+          transition:all .2s ease;
+        }
+        /* 上浮时机：聚焦 或 已输入 */
+        .field__input:focus ~ .field__label,
+        .field__input:not(:placeholder-shown) ~ .field__label{
+          top:6px;
+          translate:0 0;
+          font-size:12px;
+          color:var(--primary);
+        }
+
     </style>
 </head>
 <body>
@@ -130,14 +176,14 @@
             <div class="avatar-area">
                 <div class="avatar">
                     <!-- 如果后端返回头像URL，用<img>；否则显示首字母 -->
-<!--                    <img th:if="${user.avatar}" th:src="${user.avatar}" alt="avatar">-->
-<!--                    <span th:if="${!user.avatar}" th:text="${user.name.charAt(0)}">A</span>-->
+                    <!--                    <img th:if="${user.avatar}" th:src="${user.avatar}" alt="avatar">-->
+                    <!--                    <span th:if="${!user.avatar}" th:text="${user.name.charAt(0)}">A</span>-->
                 </div>
                 <!-- 上传输入 -->
-<!--                <input type="file" class="avatar-upload" accept="image/*" th:onchange="|avatarChange(this,'@{/upload/avatar}')|">-->
+                <!--                <input type="file" class="avatar-upload" accept="image/*" th:onchange="|avatarChange(this,'@{/upload/avatar}')|">-->
             </div>
-<!--            <div class="username" th:text="${user.name}">Admin</div>-->
-<!--            <div class="userid" th:text="'ID: '+${user.id}">ID: 10001</div>-->
+            <!--            <div class="username" th:text="${user.name}">Admin</div>-->
+            <!--            <div class="userid" th:text="'ID: '+${user.id}">ID: 10001</div>-->
         </div>
     </aside>
 
@@ -149,7 +195,7 @@
             <div class="page-title">个人中心</div>
             <div class="top-actions">
                 <button class="btn-icon" title="深色模式"><i class="fas fa-moon"></i></button>
-<!--                <a th:href="@{/logout}" class="btn-icon" title="退出登录"><i class="fas fa-sign-out-alt"></i></a>-->
+                <!--                <a th:href="@{/logout}" class="btn-icon" title="退出登录"><i class="fas fa-sign-out-alt"></i></a>-->
             </div>
         </header>
 
@@ -158,20 +204,22 @@
             <!-- 基本信息 -->
             <div class="glass-card">
                 <h2 class="section-title">基本信息</h2>
-                <div class="info-row">
-                    <span class="info-label">用户名</span>
-<!--                    <span class="info-value" th:text="${user.name}">Admin</span>-->
-                </div>
-                <div class="info-row">
-                    <span class="info-label">邮箱</span>
-<!--                    <span class="info-value" th:text="${user.email}">admin@lite.com</span>-->
-                </div>
-                <div class="info-row">
-<!--                    <span class="info-label">注册时间</span>-->
-<!--                    <span class="info-value" th:text="${#temporals.format(user.createdAt,'yyyy-MM-dd')}">2024-01-01</span>-->
-                </div>
+
+                <label class="field">
+                    <input type="text" name="username" class="field__input" placeholder="用户名" required>
+                    <span class="field__label">用户名</span>
+                </label>
+
+                <label class="field">
+                    <input type="email" name="email" class="field__input" placeholder="邮箱" required>
+                    <span class="field__label">邮箱</span>
+                </label>
+
+                <!-- 其他信息行 … -->
                 <div style="margin-top:16px;">
-                    <button class="btn-secondary" onclick="openPwdModal()"><i class="fas fa-lock"></i>修改密码</button>
+                    <button class="btn-secondary" onclick="openPwdModal()">
+                        <i class="fas fa-lock"></i>修改密码
+                    </button>
                 </div>
             </div>
 
@@ -180,22 +228,22 @@
                 <h2 class="section-title">最近操作</h2>
                 <div class="log-list">
                     <!-- 循环后端 records -->
-<!--                    <div class="log-item" th:each="log:${records}">-->
-<!--                        <span th:text="${log.action}">登录系统</span>-->
-<!--                        <span class="log-time" th:text="${#temporals.format(log.time,'yyyy-MM-dd HH:mm')}">2024-06-01 14:32</span>-->
-                    </div>
-                    <!-- 无数据提示 -->
-<!--                    <div th:if="${#lists.isEmpty(records)}" style="text-align:center;color:var(&#45;&#45;text-dark);">暂无记录</div>-->
+                    <!--                    <div class="log-item" th:each="log:${records}">-->
+                    <!--                        <span th:text="${log.action}">登录系统</span>-->
+                    <!--                        <span class="log-time" th:text="${#temporals.format(log.time,'yyyy-MM-dd HH:mm')}">2024-06-01 14:32</span>-->
                 </div>
+                <!-- 无数据提示 -->
+                <!--                    <div th:if="${#lists.isEmpty(records)}" style="text-align:center;color:var(&#45;&#45;text-dark);">暂无记录</div>-->
+            </div>
 
-                <!-- 分页占位 -->
-<!--                <div class="pagination" th:if="${totalPages>1}">-->
-<!--                    <a th:each="i:${#numbers.sequence(1,totalPages)}"-->
-<!--                       th:href="@{/personal(page=${i})}"-->
-<!--                       th:class="${i==currentPage?'page-num active':'page-num'}"-->
-<!--                       th:text="${i}">1</a>-->
-<!--                </div>-->
-<!--            </div>-->
+            <!-- 分页占位 -->
+            <!--                <div class="pagination" th:if="${totalPages>1}">-->
+            <!--                    <a th:each="i:${#numbers.sequence(1,totalPages)}"-->
+            <!--                       th:href="@{/personal(page=${i})}"-->
+            <!--                       th:class="${i==currentPage?'page-num active':'page-num'}"-->
+            <!--                       th:text="${i}">1</a>-->
+            <!--                </div>-->
+            <!--            </div>-->
         </section>
     </main>
 </div>
@@ -207,19 +255,23 @@
             <span class="modal-title">修改密码</span>
             <button class="modal-close" onclick="closePwdModal()">&times;</button>
         </div>
-<!--        <form id="pwdForm" th:action="@{/personal/updatePwd}" method="post" onsubmit="return checkPwd()">-->
-            <div class="form-group">
-                <label class="form-label">当前密码</label>
-                <input type="password" name="oldPwd" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">新密码</label>
-                <input type="password" name="newPwd" class="form-control" required minlength="6">
-            </div>
-            <div class="form-group">
-                <label class="form-label">确认新密码</label>
-                <input type="password" id="newPwd2" class="form-control" required minlength="6">
-            </div>
+
+        <form id="pwdForm" method="post" onsubmit="return checkPwd()">
+            <label class="field">
+                <input type="password" name="oldPwd" class="field__input" placeholder="当前密码" required>
+                <span class="field__label">当前密码</span>
+            </label>
+
+            <label class="field">
+                <input type="password" name="newPwd" class="field__input" placeholder="新密码" required minlength="6">
+                <span class="field__label">新密码</span>
+            </label>
+
+            <label class="field">
+                <input type="password" id="newPwd2" class="field__input" placeholder="确认新密码" required minlength="6">
+                <span class="field__label">确认新密码</span>
+            </label>
+
             <button type="submit" class="btn-primary">保存</button>
             <button type="button" class="btn-secondary" onclick="closePwdModal()" style="margin-left:8px;">取消</button>
         </form>
@@ -230,7 +282,7 @@
 <!--    <span th:if="${user.avatar == null}" th:text="${user.name.charAt(0)}">A</span>-->
 </div>
 <!--<div class="avatar" th:if="${user == null}">-->
-    <span>A</span>
+<span>A</span>
 </div>
 <script>
     /* 移动端侧边栏开关 */
