@@ -1,240 +1,449 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LiteCloud - 轻云 (一站式虚拟云服务)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script th:src="@{/js/cloud.js}"></script>
     <style>
         /* ===== 设计令牌 ===== */
-:root{
-  --bg:#0d1117;
-  --bg-light:#161b22;
-  --primary:#00d2ff;
-  --secondary:#4f6df5;
-  --accent:#ffdf00;
-  --text:#c9d1d9;
-  --text-dark:#8b949e;
-  --glass:rgba(22,27,34,.55);
-  --border:rgba(255,255,255,.08);
-  --radius:16px;
-  --shadow:0 8px 32px rgba(0,0,0,.35);
-  --font:"SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  --transition:.3s cubic-bezier(.17,.67,.3,1.45);
-}
+     :root{
+       --bg:#0d1117;
+       --bg-light:#161b22;
+       --primary:#00d2ff;
+       --secondary:#4f6df5;
+       --accent:#ffdf00;
+       --text:#c9d1d9;
+       --text-dark:#8b949e;
+       --glass:rgba(22,27,34,.55);
+       --border:rgba(255,255,255,.08);
+       --radius:16px;
+       --shadow:0 8px 32px rgba(0,0,0,.35);
+       --font:"SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       --transition:.3s cubic-bezier(.17,.67,.3,1.45);
+     }
 
-/* ===== 全局 ===== */
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  font-family:var(--font);
-  background:var(--bg);
-  color:var(--text);
-  line-height:1.6;
-  -webkit-font-smoothing:antialiased;
-}
-img{max-width:100%;display:block}
-a{text-decoration:none;color:inherit}
+     /* ===== 全局 ===== */
+     *{margin:0;padding:0;box-sizing:border-box}
+     html{scroll-behavior:smooth}
+     body{
+       font-family:var(--font);
+       background:var(--bg);
+       color:var(--text);
+       line-height:1.6;
+       -webkit-font-smoothing:antialiased;
+     }
+     img{max-width:100%;display:block}
+     a{text-decoration:none;color:inherit}
 
-/* ===== 导航 ===== */
-.navbar{
-  position:fixed;top:0;left:0;width:100%;z-index:1000;
-  background:rgba(13,17,23,.8);backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);
-  transition:var(--transition);
-}
-.nav-container{
-  max-width:1200px;margin:auto;padding:14px 20px;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.logo{
-  display:flex;align-items:center;gap:10px;
-  font-size:24px;font-weight:800;
-  background:linear-gradient(90deg,var(--primary),var(--secondary));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-}
-.nav-links{display:flex;gap:40px;list-style:none}
-.nav-links a{
-  font-weight:600;position:relative;
-  transition:var(--transition);
-}
-.nav-links a::after{
-  content:'';position:absolute;left:0;bottom:-4px;
-  width:0;height:2px;background:var(--primary);
-  transition:width .3s;
-}
-.nav-links a:hover::after{width:100%}
-.mobile-menu-btn{display:none;font-size:24px;background:0 0;border:0;color:var(--primary);cursor:pointer}
+     /* ===== 导航 ===== */
+     .navbar{
+       position:fixed;top:0;left:0;width:100%;z-index:1000;
+       background:rgba(13,17,23,.8);backdrop-filter:blur(12px);
+       border-bottom:1px solid var(--border);
+       transition:var(--transition);
+     }
+     .nav-container{
+       max-width:1200px;margin:auto;padding:14px 20px;
+       display:flex;align-items:center;justify-content:space-between;
+     }
+     .logo{
+       display:flex;align-items:center;gap:10px;
+       font-size:24px;font-weight:800;
+       background:linear-gradient(90deg,var(--primary),var(--secondary));
+       -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+     }
+     .nav-links{display:flex;gap:40px;list-style:none}
+     .nav-links a{
+       font-weight:600;position:relative;
+       transition:var(--transition);
+     }
+     .nav-links a::after{
+       content:'';position:absolute;left:0;bottom:-4px;
+       width:0;height:2px;background:var(--primary);
+       transition:width .3s;
+     }
+     .nav-links a:hover::after{width:100%}
+     .mobile-menu-btn{display:none;font-size:24px;background:0 0;border:0;color:var(--primary);cursor:pointer}
 
-/* ===== 头部轮播 ===== */
-.header-carousel{
-  position:relative;height:100vh;width:100%;overflow:hidden;
-}
-.carousel-item{
-  position:absolute;inset:0;
-  background:radial-gradient(ellipse at 50% 0%,var(--secondary) 0%,var(--bg) 70%);
-  opacity:0;transition:opacity 1.2s;
-}
-.carousel-item.active{opacity:1}
-.carousel-overlay{display:none} /* 去掉蓝色遮罩，靠背景本身渐变 */
-.hero-content{
-  position:absolute;inset:0;display:grid;place-content:center;
-  text-align:center;z-index:2;padding:0 20px;
-}
-.hero-content h1{
-  font-size:clamp(2.5rem,7vw,5rem);font-weight:800;letter-spacing:-1px;
-  margin-bottom:1rem;
-  background:linear-gradient(90deg,var(--primary),var(--accent));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-}
-.hero-content p{font-size:clamp(1rem,2.5vw,1.5rem);opacity:.9;margin-bottom:2rem}
-.cta-button{
-  display:inline-flex;align-items:center;gap:10px;
-  background:var(--primary);color:var(--bg);padding:16px 36px;
-  border-radius:50px;font-weight:700;font-size:1.1rem;
-  box-shadow:0 8px 30px rgba(0,210,255,.35);
-  transition:var(--transition);
-}
-.cta-button:hover{
-  transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,210,255,.5);
-  background:var(--accent);color:#000;
-}
+     /* ===== 头部轮播 ===== */
+     .header-carousel{
+       position:relative;height:100vh;width:100%;overflow:hidden;
+     }
+     .carousel-item{
+       position:absolute;inset:0;
+       background:radial-gradient(ellipse at 50% 0%,var(--secondary) 0%,var(--bg) 70%);
+       opacity:0;transition:opacity 1.2s;
+     }
+     .carousel-item.active{opacity:1}
+     .carousel-overlay{display:none} /* 去掉蓝色遮罩，靠背景本身渐变 */
+     .hero-content{
+       position:absolute;inset:0;display:grid;place-content:center;
+       text-align:center;z-index:2;padding:0 20px;
+     }
+     .hero-content h1{
+       font-size:clamp(2.5rem,7vw,5rem);font-weight:800;letter-spacing:-1px;
+       margin-bottom:1rem;
+       background:linear-gradient(90deg,var(--primary),var(--accent));
+       -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+     }
+     .hero-content p{font-size:clamp(1rem,2.5vw,1.5rem);opacity:.9;margin-bottom:2rem}
+     .cta-button{
+       display:inline-flex;align-items:center;gap:10px;
+       background:var(--primary);color:var(--bg);padding:16px 36px;
+       border-radius:50px;font-weight:700;font-size:1.1rem;
+       box-shadow:0 8px 30px rgba(0,210,255,.35);
+       transition:var(--transition);
+     }
+     .cta-button:hover{
+       transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,210,255,.5);
+       background:var(--accent);color:#000;
+     }
 
-/* ===== 主体通用 ===== */
-.section{padding:100px 0}
-.container{max-width:1200px;margin:auto;padding:0 20px}
-.section-title{
-  font-size:clamp(2rem,4vw,3rem);font-weight:800;text-align:center;
-  margin-bottom:3rem;position:relative;
-  background:linear-gradient(90deg,var(--primary),var(--accent));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-}
-.section-title::after{
-  content:'';position:absolute;bottom:-10px;left:50%;translate:-50%;
-  width:80px;height:4px;background:var(--primary);border-radius:2px;
-}
-.subtitle{
-  text-align:center;max-width:700px;margin:-1rem auto 3rem;font-size:1.1rem;color:var(--text-dark);
-}
+     /* ===== 主体通用 ===== */
+     .section{padding:100px 0}
+     .container{max-width:1200px;margin:auto;padding:0 20px}
+     .section-title{
+       font-size:clamp(2rem,4vw,3rem);font-weight:800;text-align:center;
+       margin-bottom:3rem;position:relative;
+       background:linear-gradient(90deg,var(--primary),var(--accent));
+       -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+     }
+     .section-title::after{
+       content:'';position:absolute;bottom:-10px;left:50%;translate:-50%;
+       width:80px;height:4px;background:var(--primary);border-radius:2px;
+     }
+     .subtitle{
+       text-align:center;max-width:700px;margin:-1rem auto 3rem;font-size:1.1rem;color:var(--text-dark);
+     }
 
-/* ===== 服务卡片 ===== */
-.services-container{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:30px;
-}
-.service-card{
-  background:var(--glass);border:1px solid var(--border);
-  border-radius:var(--radius);padding:40px 30px;text-align:center;
-  backdrop-filter:blur(12px);transition:var(--transition);
-}
-.service-card:hover{
-  transform:translateY(-10px) scale(1.02);
-  border-color:var(--primary);box-shadow:var(--shadow);
-}
-.service-icon{
-  font-size:48px;margin-bottom:20px;
-  background:linear-gradient(135deg,var(--primary),var(--secondary));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-}
-.service-card h3{font-size:1.3rem;margin-bottom:12px}
-.service-card p{font-size:.95rem;color:var(--text-dark)}
+     /* ===== 服务卡片 ===== */
+     .services-container{
+       display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:30px;
+     }
+     .service-card{
+       background:var(--glass);border:1px solid var(--border);
+       border-radius:var(--radius);padding:40px 30px;text-align:center;
+       backdrop-filter:blur(12px);transition:var(--transition);
+     }
+     .service-card:hover{
+       transform:translateY(-10px) scale(1.02);
+       border-color:var(--primary);box-shadow:var(--shadow);
+     }
+     .service-icon{
+       font-size:48px;margin-bottom:20px;
+       background:linear-gradient(135deg,var(--primary),var(--secondary));
+       -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+     }
+     .service-card h3{font-size:1.3rem;margin-bottom:12px}
+     .service-card p{font-size:.95rem;color:var(--text-dark)}
 
-/* ===== 功能亮点 ===== */
-.features-list{
-  background:var(--glass);border:1px solid var(--border);
-  border-radius:var(--radius);padding:50px;backdrop-filter:blur(12px);
-}
-.features-list ul{list-style:none;display:grid;gap:20px}
-.features-list li{
-  display:flex;align-items:center;gap:15px;font-size:1.1rem;
-}
-.features-list i{color:var(--accent);font-size:22px}
+     /* ===== 功能亮点 ===== */
+     .features-list{
+       background:var(--glass);border:1px solid var(--border);
+       border-radius:var(--radius);padding:50px;backdrop-filter:blur(12px);
+     }
+     .features-list ul{list-style:none;display:grid;gap:20px}
+     .features-list li{
+       display:flex;align-items:center;gap:15px;font-size:1.1rem;
+     }
+     .features-list i{color:var(--accent);font-size:22px}
 
-/* ===== 产品表格 ===== */
-.products-container{
-  background:var(--glass);border:1px solid var(--border);
-  border-radius:var(--radius);overflow:hidden;backdrop-filter:blur(12px);
-}
-.product-table{
-  width:100%;border-collapse:collapse;color:var(--text);
-}
-.product-table thead{
-  background:linear-gradient(135deg,var(--secondary),var(--primary));
-  color:var(--bg);
-}
-.product-table th{padding:20px;font-weight:600;text-align:left}
-.product-table td{padding:18px 20px;border-bottom:1px solid var(--border)}
-.product-table tr:hover{background:rgba(255,255,255,.05)}
-.price-tag{font-size:1.4rem;font-weight:700;color:var(--accent)}
-.buy-btn{
-  display:inline-flex;align-items:center;gap:8px;
-  background:linear-gradient(135deg,var(--primary),var(--secondary));
-  color:#000;padding:10px 24px;border-radius:50px;font-weight:600;
-  transition:var(--transition);
-}
-.buy-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,210,255,.4)}
+     /* ===== 产品表格 ===== */
+     .products-container{
+       background:var(--glass);border:1px solid var(--border);
+       border-radius:var(--radius);overflow:hidden;backdrop-filter:blur(12px);
+     }
+     .product-table{
+       width:100%;border-collapse:collapse;color:var(--text);
+     }
+     .product-table thead{
+       background:linear-gradient(135deg,var(--secondary),var(--primary));
+       color:var(--bg);
+     }
+     .product-table th{padding:20px;font-weight:600;text-align:left}
+     .product-table td{padding:18px 20px;border-bottom:1px solid var(--border)}
+     .product-table tr:hover{background:rgba(255,255,255,.05)}
+     .price-tag{font-size:1.4rem;font-weight:700;color:var(--accent)}
+     .buy-btn{
+       display:inline-flex;align-items:center;gap:8px;
+       background:linear-gradient(135deg,var(--primary),var(--secondary));
+       color:#000;padding:10px 24px;border-radius:50px;font-weight:600;
+       transition:var(--transition);
+     }
+     .buy-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,210,255,.4)}
 
-/* ===== 联系区域 ===== */
-.contact-container{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:40px;
-}
-.contact-info{
-  background:var(--glass);border:1px solid var(--border);
-  border-radius:var(--radius);padding:50px;backdrop-filter:blur(12px);
-}
-.contact-info h3{font-size:1.8rem;margin-bottom:30px}
-.contact-detail{display:flex;align-items:center;gap:15px;margin-bottom:25px}
-.contact-detail i{color:var(--accent);font-size:22px}
-.contact-form{
-  background:var(--glass);border:1px solid var(--border);
-  border-radius:var(--radius);padding:50px;backdrop-filter:blur(12px);
-}
-.form-group{margin-bottom:25px}
-.form-control{
-  width:100%;padding:14px 20px;border:1px solid var(--border);
-  border-radius:var(--radius);background:rgba(255,255,255,.05);
-  color:var(--text);font-size:1rem;transition:var(--transition);
-}
-.form-control:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,210,255,.2)}
-.submit-btn{
-  background:linear-gradient(135deg,var(--primary),var(--secondary));
-  color:#000;border:0;padding:16px 40px;border-radius:50px;
-  font-weight:700;font-size:1.1rem;cursor:pointer;transition:var(--transition);
-}
-.submit-btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,210,255,.4)}
+     /* ===== 联系区域 ===== */
+     .contact-container{
+       display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:40px;
+     }
+     .contact-info{
+       background:var(--glass);border:1px solid var(--border);
+       border-radius:var(--radius);padding:50px;backdrop-filter:blur(12px);
+     }
+     .contact-info h3{font-size:1.8rem;margin-bottom:30px}
+     .contact-detail{display:flex;align-items:center;gap:15px;margin-bottom:25px}
+     .contact-detail i{color:var(--accent);font-size:22px}
+     .contact-form{
+       background:var(--glass);border:1px solid var(--border);
+       border-radius:var(--radius);padding:50px;backdrop-filter:blur(12px);
+     }
+     .form-group{margin-bottom:25px}
+     .form-control{
+       width:100%;padding:14px 20px;border:1px solid var(--border);
+       border-radius:var(--radius);background:rgba(255,255,255,.05);
+       color:var(--text);font-size:1rem;transition:var(--transition);
+     }
+     .form-control:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,210,255,.2)}
+     .submit-btn{
+       background:linear-gradient(135deg,var(--primary),var(--secondary));
+       color:#000;border:0;padding:16px 40px;border-radius:50px;
+       font-weight:700;font-size:1.1rem;cursor:pointer;transition:var(--transition);
+     }
+     .submit-btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,210,255,.4)}
 
-/* ===== 页脚 ===== */
-footer{
-  background:var(--bg-light);border-top:1px solid var(--border);
-  padding:60px 0 30px;text-align:center;font-size:.9rem;
-  color:var(--text-dark);
-}
-.footer-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:40px;margin-bottom:30px}
-.footer-column h3{font-size:1.2rem;margin-bottom:20px;color:var(--primary)}
-.footer-links{list-style:none;display:grid;gap:10px}
-.footer-links a:hover{color:var(--accent)}
-.social-links{display:flex;gap:15px;margin-top:20px;justify-content:center}
-.social-links a{
-  width:40px;height:40px;border-radius:50%;
-  background:rgba(255,255,255,.08);display:grid;place-content:center;
-  transition:var(--transition);
-}
-.social-links a:hover{background:var(--primary);color:var(--bg);transform:translateY(-3px)}
+     /* ===== 页脚 ===== */
+     footer{
+       background:var(--bg-light);border-top:1px solid var(--border);
+       padding:60px 0 30px;text-align:center;font-size:.9rem;
+       color:var(--text-dark);
+     }
+     .footer-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:40px;margin-bottom:30px}
+     .footer-column h3{font-size:1.2rem;margin-bottom:20px;color:var(--primary)}
+     .footer-links{list-style:none;display:grid;gap:10px}
+     .footer-links a:hover{color:var(--accent)}
+     .social-links{display:flex;gap:15px;margin-top:20px;justify-content:center}
+     .social-links a{
+       width:40px;height:40px;border-radius:50%;
+       background:rgba(255,255,255,.08);display:grid;place-content:center;
+       transition:var(--transition);
+     }
+     .social-links a:hover{background:var(--primary);color:var(--bg);transform:translateY(-3px)}
 
-/* ===== 响应式 ===== */
-@media(max-width:768px){
-  .nav-links{
-    position:fixed;inset:0 0 auto;flex-direction:column;
-    background:var(--bg-light);padding:30px 0;
-    transform:translateY(-100%);transition:var(--transition);
-  }
-  .nav-links.active{transform:translateY(70px)}
-  .mobile-menu-btn{display:block}
-  .section{padding:70px 0}
-}
+     /* ===== 响应式 ===== */
+     @media(max-width:768px){
+       .nav-links{
+         position:fixed;inset:0 0 auto;flex-direction:column;
+         background:var(--bg-light);padding:30px 0;
+         transform:translateY(-100%);transition:var(--transition);
+       }
+       .nav-links.active{transform:translateY(70px)}
+       .mobile-menu-btn{display:block}
+       .section{padding:70px 0}
+     }
+        .navbar.scrolled .logo{
+        animation:neon 2s ease-in-out infinite alternate;
+      }
+        @keyframes neon{
+        from{text-shadow:0 0 5px var(--primary),0 0 10px var(--primary)}
+        to{text-shadow:0 0 10px var(--accent),0 0 20px var(--accent)}
+      }
+        /*========== 功能亮点 - 玻璃轮播 ==========*/
+      .features-c{
+        display:grid;grid-template-columns:420px 1fr;gap:40px;align-items:center;
+        background:var(--glass);border:1px solid var(--border);
+        border-radius:var(--radius);padding:40px;backdrop-filter:blur(12px);
+      }
+      .c-left{position:relative;aspect-ratio:4/3;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+      .c-left img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s}
+      .c-left input{display:none}
+      #fc1:checked ~ img:nth-of-type(1),
+      #fc2:checked ~ img:nth-of-type(2){opacity:1}
+      .dots{position:absolute;bottom:15px;left:50%;translate:-50%;display:flex;gap:8px}
+      .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.4);cursor:pointer;transition:background .3s}
+      #fc1:checked ~ .dots .dot:nth-of-type(1),
+      #fc2:checked ~ .dots .dot:nth-of-type(2){background:var(--accent)}
+
+      .c-right ul{list-style:none;display:grid;gap:20px}
+      .c-right li{
+        display:flex;align-items:center;gap:15px;font-size:1.1rem;
+        padding:12px 16px;border-radius:8px;
+        background:rgba(255,255,255,.03);
+        transition:var(--transition);
+      }
+      .c-right li:hover{background:rgba(0,210,255,.08);transform:translateX(6px)}
+      .c-right i{color:var(--accent);font-size:22px;transition:var(--transition)}
+      .c-right li:hover i{transform:scale(1.2) rotate(-10deg)}
+
+      /* 移动端自动叠放 */
+      @media(max-width:768px){
+        .features-c{grid-template-columns:1fr}
+        .c-left{order:-1}
+      }
+        /*==== 练习开始 ====*/
+      .features-c{
+        /* 已存在，只需追加 3D 视角 */
+        transform-style:preserve-3d;
+        transition:transform .4s cubic-bezier(.17,.67,.3,1.45);
+      }
+      .features-c:hover{
+        transform:perspective(1000px) rotateX(5deg) rotateY(-5deg) scale(1.02);
+        box-shadow:0 20px 50px rgba(0,210,255,.4);
+      }
+
+      /* 文字条带光效 */
+      .c-right li{
+        position:relative;
+        overflow:hidden;
+        padding:12px 16px;border-radius:8px;
+        background:rgba(255,255,255,.03);
+        transition:var(--transition);
+      }
+      .c-right li::before{
+        content:'';
+        position:absolute;inset:0;
+        background:linear-gradient(90deg,transparent,var(--primary),transparent);
+        transform:translateX(-100%);
+        transition:transform .6s;
+      }
+      .c-right li:hover::before{transform:translateX(100%)}
+      .c-right li:hover{background:rgba(0,210,255,.08);transform:translateX(6px)}
+      .c-right i{color:var(--accent);font-size:22px;transition:var(--transition)}
+      .c-right li:hover i{transform:scale(1.2) rotate(-10deg)}
+
+      /* 价格数字递增 */
+      .price-tag{
+        display:inline-block;
+        font-size:1.4rem;font-weight:700;color:var(--accent);
+      }
+        /*======== 联系我们 3D 玻璃 ========*/
+      .contact-grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+        gap:40px;
+        margin-bottom:50px;
+      }
+      .contact-info-card,.contact-form-card{
+        background:var(--glass);
+        border:1px solid var(--border);
+        border-radius:var(--radius);
+        padding:40px;
+        backdrop-filter:blur(12px);
+        transform-style:preserve-3d;
+        transition:var(--transition);
+      }
+      .contact-info-card:hover,.contact-form-card:hover{
+        transform:perspective(1000px) rotateX(3deg) rotateY(-3deg) scale(1.02);
+        box-shadow:0 20px 50px rgba(0,210,255,.4);
+      }
+      .contact-info-card h3,.contact-form-card h3{
+        font-size:1.6rem;margin-bottom:25px;
+        background:linear-gradient(90deg,var(--primary),var(--accent));
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      }
+      .info-item{
+        display:flex;align-items:center;gap:15px;
+        margin-bottom:20px;
+      }
+      .info-item i{
+        font-size:22px;color:var(--accent);
+      }
+      .info-item h4{font-size:1rem;margin-bottom:4px}
+      .info-item p{margin:0;color:var(--text-dark)}
+      .social-bar{
+        display:flex;gap:12px;margin-top:30px;
+      }
+      .social-bar a{
+        width:40px;height:40px;border-radius:50%;
+        background:rgba(255,255,255,.08);display:grid;place-content:center;
+        color:var(--text);transition:var(--transition);
+      }
+      .social-bar a:hover{
+        background:var(--primary);color:var(--bg);transform:translateY(-3px);
+      }
+
+      /* 表单增强 */
+      .form-group{margin-bottom:20px}
+      .form-control{
+        width:100%;padding:14px 18px;border:1px solid var(--border);
+        border-radius:var(--radius);background:rgba(255,255,255,.05);
+        color:var(--text);font-size:1rem;transition:var(--transition);
+      }
+      .form-control:focus{
+        outline:0;border-color:var(--primary);
+        box-shadow:0 0 0 3px rgba(0,210,255,.25);
+      }
+      .submit-btn{
+        display:inline-flex;align-items:center;gap:10px;
+        background:linear-gradient(135deg,var(--primary),var(--secondary));
+        color:#000;padding:14px 32px;border-radius:50px;font-weight:700;
+        border:none;cursor:pointer;transition:var(--transition);
+      }
+      .submit-btn:hover{
+        transform:translateY(-3px);
+        box-shadow:0 10px 30px rgba(0,210,255,.4);
+      }
+
+      /* 地图占位 */
+      .map-placeholder{
+        text-align:center;padding:60px 20px;
+      }
+      .map-placeholder i{
+        font-size:48px;color:var(--accent);margin-bottom:10px;
+      }
+      .map-placeholder p{color:var(--text-dark)}
+
+      /* 移动端 */
+      @media(max-width:768px){
+        .contact-grid{grid-template-columns:1fr}
+      }
+        /*======== 我们的服务 - 3D 玻璃悬浮 =========*/
+      .services-container{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+        gap:30px;
+        perspective:1000px;        /* 3D 视角 */
+      }
+      .service-card{
+        background:var(--glass);
+        border:1px solid var(--border);
+        border-radius:var(--radius);
+        padding:40px 30px;
+        text-align:center;
+        backdrop-filter:blur(12px);
+        transform-style:preserve-3d;
+        transition:var(--transition);
+        position:relative;
+        overflow:hidden;
+      }
+      .service-card::before{      /* 顶部霓虹光边 */
+        content:'';
+        position:absolute;
+        top:0;left:0;right:0;
+        height:3px;
+        background:linear-gradient(90deg,var(--primary),var(--accent));
+        transform:scaleX(0);
+        transition:transform .4s;
+      }
+      .service-card:hover::before{transform:scaleX(1);}
+      .service-card:hover{
+        transform:translateY(-10px) rotateX(5deg) rotateY(-3deg);
+        box-shadow:0 20px 50px rgba(0,210,255,.4);
+        border-color:var(--primary);
+      }
+      .service-icon{
+        font-size:48px;margin-bottom:20px;
+        background:linear-gradient(135deg,var(--primary),var(--accent));
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        transition:var(--transition);
+      }
+      .service-card:hover .service-icon{
+        transform:scale(1.15) rotate(-8deg);
+      }
+      .service-card h3{
+        font-size:1.3rem;margin-bottom:12px;
+        color:var(--text);
+        transition:var(--transition);
+      }
+      .service-card:hover h3{color:var(--accent);}
+      .service-card p{
+        font-size:.95rem;color:var(--text-dark);
+      }
     </style>
 </head>
 <body>
-
+<span class="price-tag counter" data-target="9.9">0</span>/月
 <!-- 导航栏 -->
 <nav class="navbar">
     <div class="container nav-container">
@@ -259,9 +468,9 @@ footer{
 <!-- 头部轮播 -->
 <div class="header-carousel" id="home">
     <div class="carousel-overlay"></div>
-    <img src="images/bg1.jpg" alt="背景图1" class="carousel-item active">
-    <img src="images/bg2.png" alt="背景图2" class="carousel-item">
-    <img src="images/bg3.jpg" alt="背景图3" class="carousel-item">
+    <img th:src="@{/images/bg1.jpg}" alt="背景图1" class="carousel-item active">
+    <img th:src="@{/images/bg2.png}" alt="背景图2" class="carousel-item">
+    <img th:src="@{/images/bg3.jpg}" alt="背景图3" class="carousel-item">
 
     <div class="hero-content">
         <h1>LiteCloud - 轻云</h1>
@@ -332,17 +541,32 @@ footer{
         </section>
 
         <!-- 功能亮点 -->
-        <section id="features" class="section" style="background-color: #f8faff; border-radius: var(--border-radius);">
+        <section id="features" class="section">
             <div class="container">
-                <h2 class="section-title animate-on-scroll">功能亮点</h2>
+                <h2 class="section-title">功能亮点</h2>
 
-                <div class="features-list animate-on-scroll">
-                    <ul>
-                        <li><i class="fas fa-bolt"></i> 智能弹性伸缩，按需付费，根据业务需求自动调整计算资源</li>
-                        <li><i class="fas fa-tachometer-alt"></i> 优调数据中心，极速访问，全球网络优化确保低延迟体验</li>
-                        <li><i class="fas fa-check-circle"></i> 高可用性架构，99.99% SLA保证，确保业务持续稳定运行</li>
-                        <li><i class="fas fa-lock"></i> 强大安全性，DDoS防护与数据加密，全方位保护您的数据安全</li>
-                    </ul>
+                <div class="glass-card features-c">
+                    <!-- 左侧轮播 -->
+                    <div class="c-left">
+                        <input type="radio" name="fc" id="fc1" checked>
+                        <img src="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'&gt;&lt;rect fill='%2300d2ff' width='600' height='400'/&gt;&lt;text x='50%' y='50%' text-anchor='middle' dy='.3em' fill='white' font-size='40'&gt;Feat 1&lt;/text&gt;&lt;/svg&gt;" alt="亮点图1">
+                        <img src="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'&gt;&lt;rect fill='%234f6df5' width='600' height='400'/&gt;&lt;text x='50%' y='50%' text-anchor='middle' dy='.3em' fill='white' font-size='40'&gt;Feat 2&lt;/text&gt;&lt;/svg&gt;" alt="亮点图2">
+                        <input type="radio" name="fc" id="fc2">
+                        <div class="dots">
+                            <label for="fc1" class="dot"></label>
+                            <label for="fc2" class="dot"></label>
+                        </div>
+                    </div>
+
+                    <!-- 右侧文字 -->
+                    <div class="c-right">
+                        <ul>
+                            <li><i class="fas fa-bolt"></i> 智能弹性伸缩，按需付费，根据业务需求自动调整计算资源</li>
+                            <li><i class="fas fa-rocket"></i> 优调数据中心，极速访问，全球网络优化确保低延迟体验</li>
+                            <li><i class="fas fa-shield-alt"></i> 高可用性架构，99.99 % SLA 保证，确保业务持续稳定运行</li>
+                            <li><i class="fas fa-lock"></i> 强大安全性，DDoS 防护与数据加密，全方位保护您的数据安全</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </section>
@@ -386,69 +610,83 @@ footer{
         </section>
 
         <!-- 联系我们 -->
+        <!-- 联系我们 -->
         <section id="contact" class="section">
-            <h2 class="section-title animate-on-scroll">联系我们</h2>
-            <p class="animate-on-scroll" style="text-align: center; max-width: 800px; margin: 0 auto 50px; font-size: 18px; color: var(--text-light);">
-                如果您有任何疑问，欢迎联系我们的客服团队，我们将竭诚为您提供帮助。
-            </p>
+            <div class="container">
+                <h2 class="section-title animate-on-scroll">联系我们</h2>
+                <p class="subtitle animate-on-scroll">7×24 在线，我们随时为您提供技术支持与咨询服务</p>
 
-            <div class="contact-container">
-                <div class="contact-info animate-on-scroll">
-                    <h3>联系信息</h3>
+                <div class="contact-grid">
+                    <!-- 左侧信息 -->
+                    <div class="contact-info-card glass-card">
+                        <h3>联系信息</h3>
 
-                    <div class="contact-detail">
-                        <i class="fas fa-envelope"></i>
-                        <div>
-                            <h4>邮箱</h4>
-                            <p>yexiaonan78@gmail.com</p>
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <h4>邮箱</h4>
+                                <p>yexiaonan78@gmail.com</p>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <h4>电话</h4>
+                                <p>400-123-4567</p>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <h4>地址</h4>
+                                <p>303人工智能实训室</p>
+                            </div>
+                        </div>
+
+                        <div class="social-bar">
+                            <a href="#" aria-label="微信"><i class="fab fa-weixin"></i></a>
+                            <a href="#" aria-label="微博"><i class="fab fa-weibo"></i></a>
+                            <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
                         </div>
                     </div>
 
-                    <div class="contact-detail">
-                        <i class="fas fa-phone"></i>
-                        <div>
-                            <h4>电话</h4>
-                            <p>400-123-4567</p>
-                        </div>
-                    </div>
+                    <!-- 右侧表单 -->
+                    <div class="contact-form-card glass-card">
+                        <h3>发送消息</h3>
+                        <form id="contactForm">
+                            <div class="form-group">
+                                <label for="name">姓名</label>
+                                <input type="text" id="name" class="form-control" placeholder="请输入您的姓名" required>
+                            </div>
 
-                    <div class="contact-detail">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <div>
-                            <h4>地址</h4>
-                            <p>303人工智能实训室</p>
-                        </div>
-                    </div>
+                            <div class="form-group">
+                                <label for="email">邮箱</label>
+                                <input type="email" id="email" class="form-control" placeholder="请输入您的邮箱" required>
+                            </div>
 
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-weixin"></i></a>
-                        <a href="#"><i class="fab fa-weibo"></i></a>
-                        <a href="#"><i class="fab fa-github"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <div class="form-group">
+                                <label for="message">消息</label>
+                                <textarea id="message" class="form-control" rows="5" placeholder="请输入您的消息" required></textarea>
+                            </div>
+
+                            <button type="submit" class="submit-btn">
+                                <span>发送消息</span>
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
                     </div>
                 </div>
 
-                <div class="contact-form animate-on-scroll">
-                    <h3>发送消息</h3>
-
-                    <form id="contactForm">
-                        <div class="form-group">
-                            <label for="name">姓名</label>
-                            <input type="text" id="name" class="form-control" placeholder="请输入您的姓名" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="email">邮箱</label>
-                            <input type="email" id="email" class="form-control" placeholder="请输入您的邮箱" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="message">消息</label>
-                            <textarea id="message" class="form-control" rows="5" placeholder="请输入您的消息" required></textarea>
-                        </div>
-
-                        <button type="submit" class="submit-btn">发送消息 <i class="fas fa-paper-plane"></i></button>
-                    </form>
+                <!-- 地图占位（可替换真实嵌入） -->
+                <div class="map-placeholder glass-card animate-on-scroll">
+                    <i class="fas fa-map"></i>
+                    <p>地图加载中…</p>
+                    <!-- 替换为真实嵌入：
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18..."></iframe>
+                    -->
                 </div>
             </div>
         </section>
