@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LMX 注册</title>
+  <style>
+    /* ===== 黑白灰令牌 ===== */
+    :root{
+      --bg:#000;
+      --card:rgba(255,255,255,.05);
+      --line:rgba(255,255,255,.08);
+      --text:#fff;
+      --text-dark:#aaa;
+      --primary:#fff;
+      --radius:12px;
+      --transition:.3s ease;
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;color:var(--text);}
+
+    .layout{display:flex;height:100%;background:#000;}
+
+    /* ===== 左侧轮播 2/3 ===== */
+    .carousel-side{flex:2;position:relative;overflow:hidden;background:#000;}
+    .carousel-slide{
+      position:absolute;inset:0;
+      background:center/cover no-repeat;
+      opacity:0;animation:fade 16s infinite;
+    }
+    /* 四张图，每张 4s，依次切换 */
+    .carousel-slide:nth-child(1){background-image:url("https://source.unsplash.com/1920x1080/?dark,abstract");animation-delay:0s;}
+    .carousel-slide:nth-child(2){background-image:url("https://source.unsplash.com/1920x1080/?dark,technology");animation-delay:4s;}
+    .carousel-slide:nth-child(3){background-image:url("https://source.unsplash.com/1920x1080/?dark,city");animation-delay:8s;}
+    .carousel-slide:nth-child(4){background-image:url("https://source.unsplash.com/1920x1080/?dark,space");animation-delay:12s;}
+
+    @keyframes fade{
+      0%,20%{opacity:1;}
+      25%,95%{opacity:0;}
+      100%{opacity:1;}
+    }
+
+    /* ===== 右侧登录 1/3 ===== */
+    .login-side{flex:1;display:flex;align-items:center;justify-content:center;padding:40px;background:#111;}
+    .login-card{
+      width:100%;max-width:360px;
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      backdrop-filter:blur(20px);
+      padding:50px 32px;
+      box-shadow:0 20px 40px rgba(0,0,0,.5);
+    }
+    .brand{text-align:center;margin-bottom:40px;}
+    .brand h1{font-size:26px;font-weight:700;letter-spacing:2px;background:linear-gradient(90deg,#fff,#999);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .brand p{font-size:13px;color:var(--text-dark);margin-top:6px;}
+
+    .form-group{position:relative;margin-bottom:28px;}
+    .form-control{width:100%;padding:14px 18px;background:transparent;border:none;border-bottom:1px solid var(--line);color:var(--text);font-size:15px;transition:var(--transition);}
+    .form-control:focus{outline:none;border-color:var(--primary);}
+    .form-control::placeholder{color:var(--text-dark);}
+    .line{position:absolute;left:0;bottom:0;width:0;height:2px;background:var(--primary);transition:width .3s;}
+    .form-control:focus ~ .line{width:100%;}
+
+    .pwd-box{display:flex;align-items:center;}
+    .toggle-pwd{padding:0 12px;cursor:pointer;color:var(--text-dark);transition:var(--transition);}
+    .toggle-pwd:hover{color:var(--primary);}
+
+    .btn-login{width:100%;padding:14px;background:linear-gradient(90deg,#fff,#ccc);color:#000;font-size:16px;font-weight:600;border:none;border-radius:var(--radius);cursor:pointer;transition:var(--transition);}
+    .btn-login:hover{transform:scale(1.02);box-shadow:0 8px 20px rgba(255,255,255,.25);}
+
+    .error-tip{margin-top:12px;font-size:13px;color:#ff4d4f;text-align:center;}
+
+    @media (max-width:768px){
+      .layout{flex-direction:column;}
+      .carousel-side{height:40vh;flex:none;}
+      .login-side{height:60vh;padding:24px;}
+    }
+
+    .carousel-slide{
+      position:absolute;inset:0;
+      background:center/cover no-repeat;   /* 新增这一行即可 */
+      opacity:0;animation:fade 16s infinite;
+    }
+    .btn-reg{
+    display:block;width:100%;padding:14px;margin-top:12px;
+    background:transparent;color:var(--primary);
+    border:1px solid var(--primary);border-radius:var(--radius);
+    font-size:16px;font-weight:600;text-align:center;
+    transition:var(--transition);
+    }
+.btn-reg:hover{background:var(--primary);color:#000;}
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- 左侧轮播 -->
+  <!-- 左侧轮播 -->
+  <div class="carousel-side">
+    <div class="carousel-slide" th:style="|background-image:url('@{/images/bg4.jpg}')|"></div>
+    <div class="carousel-slide" th:style="|background-image:url('@{/images/bg5.jpg}')|"></div>
+    <div class="carousel-slide" th:style="|background-image:url('@{/images/bg6.jpg}')|"></div>
+    <div class="carousel-slide" th:style="|background-image:url('@{/images/bg7.jpg}')|"></div>
+  </div>
+
+  <!-- 右侧登录 -->
+  <div class="login-side">
+    <div class="login-card">
+      <div class="brand">
+        <h1>LiteManagerX - 注册</h1>
+        <p>极致轻量 · 云端管理</p>
+      </div>
+
+      <form id="loginForm" th:action="@{/login}" method="post">
+        <div class="form-group">
+          <input type="text" name="username" class="form-control" placeholder="用户名" required autofocus>
+          <span class="line"></span>
+        </div>
+
+        <div class="form-group">
+          <div class="pwd-box">
+            <input type="password" name="password" class="form-control" placeholder="密码" required>
+            <i class="toggle-pwd fas fa-eye"></i>
+          </div>
+          <span class="line"></span>
+        </div>
+
+        <button type="submit" class="btn-login">注册</button>
+
+        <!-- 注册按钮 -->
+        <a th:href="@{/register}" class="btn-reg">返回登录</a>
+
+        <div class="error-tip" th:text="${error}"></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 密码可见性切换
+  document.querySelector('.toggle-pwd').addEventListener('click', function () {
+    const pwd = document.querySelector('input[name="password"]');
+    const type = pwd.type === 'password' ? 'text' : 'password';
+    pwd.type = type;
+    this.classList.toggle('fa-eye');
+    this.classList.toggle('fa-eye-slash');
+  });
+</script>
+
+</body>
+</html>
