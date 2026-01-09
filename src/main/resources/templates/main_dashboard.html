@@ -1,14 +1,284 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Main Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - LiteManagerX</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script th:src="@{/js/main.js}"></script>
+    <style>
+                /* ===== 霓虹玻璃令牌 ===== */
+        :root{
+          --bg:#000;
+          --bg-light:#0a0a0a;
+          --glass:rgba(255,255,255,.07);
+          --line:rgba(0,210,255,.25);
+          --text:#fff;
+          --text-dark:#aaa;
+          --primary:#00d2ff;
+          --accent:#ffdf00;
+          --radius:16px;
+          --transition:.3s cubic-bezier(.17,.67,.3,1.45);
+        }
+
+        *{margin:0;padding:0;box-sizing:border-box}
+        html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--text);background:var(--bg);}
+
+        /* ===== 布局 ===== */
+        .layout{display:flex;height:100%;gap:4px;background:#000;}
+
+        /* ===== 左侧边栏 - 霓虹 ===== */
+        .sidebar{width:280px;background:var(--bg-light);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:24px;position:relative;overflow:hidden;}
+        .sidebar::before{content:"";position:absolute;top:0;left:0;width:2px;height:100%;background:linear-gradient(to bottom,var(--accent),var(--primary));box-shadow:0 0 10px var(--accent);}
+
+        .brand{font-size:22px;font-weight:800;margin-bottom:30px;letter-spacing:2px;background:linear-gradient(90deg,var(--accent),var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+        .nav{list-style:none;}
+        .nav li{margin-bottom:14px;}
+        .nav a{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--radius);color:var(--text-dark);transition:var(--transition);position:relative;overflow:hidden;}
+        .nav a::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--accent),var(--primary));opacity:0;transition:opacity .3s;}
+        .nav a:hover::before,.nav a.active::before{opacity:.15;}
+        .nav a:hover,.nav a.active{color:var(--primary);text-shadow:0 0 8px var(--primary);}
+        .nav i{width:20px;text-align:center;}
+
+        /* 用户卡片 - 悬浮霓虹 */
+        .user-card{background:var(--glass);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:auto;text-align:center;backdrop-filter:blur(12px);transition:var(--transition);}
+        .user-card:hover{box-shadow:0 0 20px var(--accent);}
+        .avatar-area{cursor:pointer;display:inline-block;position:relative;}
+        .avatar{width:70px;height:70px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,var(--accent),var(--primary));display:grid;place-content:center;font-size:28px;font-weight:700;color:#000;box-shadow:0 0 12px var(--accent);}
+        .avatar img{width:100%;height:100%;object-fit:cover;}
+        .avatar-upload{position:absolute;inset:0;opacity:0;cursor:pointer;}
+        .username{font-size:16px;font-weight:600;margin-top:8px;}
+        .userid{font-size:12px;color:var(--text-dark);}
+
+        /* ===== 主区域 - 玻璃 + 动态灯带 ===== */
+        .main{flex:1;display:flex;flex-direction:column;background:var(--bg);}
+        .topbar{height:70px;background:var(--glass);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 32px;backdrop-filter:blur(12px);}
+        .page-title{font-size:20px;font-weight:700;letter-spacing:1px;background:linear-gradient(90deg,var(--accent),var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+        .top-actions{display:flex;align-items:center;gap:12px;}
+        .btn-icon{width:40px;height:40px;border-radius:50%;background:var(--glass);border:1px solid var(--line);display:grid;place-content:center;color:var(--text);cursor:pointer;transition:var(--transition);position:relative;}
+        .btn-icon:hover{background:var(--primary);color:#000;box-shadow:0 0 12px var(--primary);}
+
+        .content{padding:32px;overflow-y:auto;display:grid;gap:24px;}
+
+        /* 玻璃卡片 + 悬浮光 */
+        .glass-card{background:var(--glass);border:1px solid var(--line);border-radius:var(--radius);padding:28px;backdrop-filter:blur(12px);transition:var(--transition);}
+        .glass-card:hover{box-shadow:0 0 25px var(--accent);}
+        .section-title{font-size:18px;font-weight:700;margin-bottom:20px;letter-spacing:.5px;}
+
+        /* 信息项 */
+        .info-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);}
+        .info-row:last-child{border-bottom:none;}
+        .info-label{color:var(--text-dark);}
+        .info-value{font-weight:500;}
+
+        /* 按钮 - 霓虹边框 */
+        .btn-primary{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:linear-gradient(135deg,var(--accent),var(--primary));color:#000;border-radius:var(--radius);font-size:14px;font-weight:600;transition:var(--transition);box-shadow:0 4px 15px rgba(0,210,255,.4);}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,210,255,.6);}
+        .btn-secondary{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:transparent;color:var(--primary);border:1px solid var(--primary);border-radius:var(--radius);font-size:14px;font-weight:600;transition:var(--transition);}
+        .btn-secondary:hover{background:var(--primary);color:#000;box-shadow:0 0 20px var(--primary);}
+
+        /* 操作记录 */
+        .log-list{display:grid;gap:12px;}
+        .log-item{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--bg-light);border-radius:var(--radius);border-left:3px solid var(--accent);transition:var(--transition);}
+        .log-item:hover{background:rgba(0,210,255,.1);}
+        .log-time{font-size:12px;color:var(--text-dark);}
+
+        /* 分页 - 霓虹数字 */
+        .pagination{margin-top:20px;display:flex;gap:8px;justify-content:center;}
+        .page-num{padding:8px 12px;background:var(--glass);border:1px solid var(--line);border-radius:var(--radius);font-size:12px;color:var(--text-dark);cursor:pointer;transition:var(--transition);}
+        .page-num:hover,.page-num.active{background:var(--primary);color:#000;box-shadow:0 0 10px var(--primary);}
+
+        /* 弹窗 - 玻璃 + 光边 */
+        .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:200;}
+        .modal.open{display:flex;}
+        .modal-content{background:var(--glass);border:1px solid var(--line);border-radius:var(--radius);padding:28px;width:100%;max-width:420px;backdrop-filter:blur(12px);box-shadow:0 0 30px var(--accent);}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+        .modal-title{font-size:18px;font-weight:600;letter-spacing:1px;background:linear-gradient(90deg,var(--accent),var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+        .modal-close{background:0 0;border:0;font-size:24px;color:var(--text);cursor:pointer;transition:var(--transition);}
+        .modal-close:hover{color:var(--accent);}
+        .form-group{margin-bottom:16px;}
+        .form-label{font-size:13px;color:var(--text-dark);margin-bottom:6px;display:block;}
+        .form-control{width:100%;padding:12px 14px;background:transparent;border:1px solid var(--line);border-radius:var(--radius);color:var(--text);font-size:14px;transition:var(--transition);}
+        .form-control:focus{outline:none;border-color:var(--primary);box-shadow:0 0 8px var(--primary);}
+
+        /* 移动端 */
+        @media (max-width:768px){
+          .sidebar{position:fixed;left:-280px;top:0;bottom:0;z-index:100;transition:left .3s;}
+          .sidebar.open{left:0;}
+          .menu-toggle{display:block;}
+        }
+        .menu-toggle{display:none;font-size:20px;background:0 0;border:0;color:var(--primary);cursor:pointer;}
+    </style>
 </head>
 <body>
 
-<h1>欢迎进入 LiteManagerX</h1>
+<div class="layout">
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+        <div class="brand">LiteManagerX</div>
+        <ul class="nav">
+            <li><a href="#" class="active"><i class="fas fa-user"></i>个人中心</a></li>
+            <li><a href="#"><i class="fas fa-chart-line"></i>仪表盘</a></li>
+            <li><a href="#"><i class="fas fa-server"></i>我的服务</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i>系统设置</a></li>
+        </ul>
 
-<p>你已成功登录。</p>
+        <!-- 用户卡片（后端数据） -->
+        <div class="user-card">
+            <!-- 头像上传预览 -->
+            <div class="avatar-area">
+                <div class="avatar">
+                    <!-- 如果后端返回头像URL，用<img>；否则显示首字母 -->
+<!--                    <img th:if="${user.avatar}" th:src="${user.avatar}" alt="avatar">-->
+<!--                    <span th:if="${!user.avatar}" th:text="${user.name.charAt(0)}">A</span>-->
+                </div>
+                <!-- 上传输入 -->
+<!--                <input type="file" class="avatar-upload" accept="image/*" th:onchange="|avatarChange(this,'@{/upload/avatar}')|">-->
+            </div>
+<!--            <div class="username" th:text="${user.name}">Admin</div>-->
+<!--            <div class="userid" th:text="'ID: '+${user.id}">ID: 10001</div>-->
+        </div>
+    </aside>
+
+    <!-- 主区域 -->
+    <main class="main">
+        <!-- 顶部栏 -->
+        <header class="topbar">
+            <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+            <div class="page-title">个人中心</div>
+            <div class="top-actions">
+                <button class="btn-icon" title="深色模式"><i class="fas fa-moon"></i></button>
+<!--                <a th:href="@{/logout}" class="btn-icon" title="退出登录"><i class="fas fa-sign-out-alt"></i></a>-->
+            </div>
+        </header>
+
+        <!-- 内容区 -->
+        <section class="content">
+            <!-- 基本信息 -->
+            <div class="glass-card">
+                <h2 class="section-title">基本信息</h2>
+                <div class="info-row">
+                    <span class="info-label">用户名</span>
+<!--                    <span class="info-value" th:text="${user.name}">Admin</span>-->
+                </div>
+                <div class="info-row">
+                    <span class="info-label">邮箱</span>
+<!--                    <span class="info-value" th:text="${user.email}">admin@lite.com</span>-->
+                </div>
+                <div class="info-row">
+<!--                    <span class="info-label">注册时间</span>-->
+<!--                    <span class="info-value" th:text="${#temporals.format(user.createdAt,'yyyy-MM-dd')}">2024-01-01</span>-->
+                </div>
+                <div style="margin-top:16px;">
+                    <button class="btn-secondary" onclick="openPwdModal()"><i class="fas fa-lock"></i>修改密码</button>
+                </div>
+            </div>
+
+            <!-- 最近操作（分页） -->
+            <div class="glass-card" style="margin-top:24px;">
+                <h2 class="section-title">最近操作</h2>
+                <div class="log-list">
+                    <!-- 循环后端 records -->
+<!--                    <div class="log-item" th:each="log:${records}">-->
+<!--                        <span th:text="${log.action}">登录系统</span>-->
+<!--                        <span class="log-time" th:text="${#temporals.format(log.time,'yyyy-MM-dd HH:mm')}">2024-06-01 14:32</span>-->
+                    </div>
+                    <!-- 无数据提示 -->
+<!--                    <div th:if="${#lists.isEmpty(records)}" style="text-align:center;color:var(&#45;&#45;text-dark);">暂无记录</div>-->
+                </div>
+
+                <!-- 分页占位 -->
+<!--                <div class="pagination" th:if="${totalPages>1}">-->
+<!--                    <a th:each="i:${#numbers.sequence(1,totalPages)}"-->
+<!--                       th:href="@{/personal(page=${i})}"-->
+<!--                       th:class="${i==currentPage?'page-num active':'page-num'}"-->
+<!--                       th:text="${i}">1</a>-->
+<!--                </div>-->
+<!--            </div>-->
+        </section>
+    </main>
+</div>
+
+<!-- 修改密码弹窗 -->
+<div id="pwdModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="modal-title">修改密码</span>
+            <button class="modal-close" onclick="closePwdModal()">&times;</button>
+        </div>
+<!--        <form id="pwdForm" th:action="@{/personal/updatePwd}" method="post" onsubmit="return checkPwd()">-->
+            <div class="form-group">
+                <label class="form-label">当前密码</label>
+                <input type="password" name="oldPwd" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">新密码</label>
+                <input type="password" name="newPwd" class="form-control" required minlength="6">
+            </div>
+            <div class="form-group">
+                <label class="form-label">确认新密码</label>
+                <input type="password" id="newPwd2" class="form-control" required minlength="6">
+            </div>
+            <button type="submit" class="btn-primary">保存</button>
+            <button type="button" class="btn-secondary" onclick="closePwdModal()" style="margin-left:8px;">取消</button>
+        </form>
+    </div>
+</div>
+<!--<div class="avatar" th:if="${user != null}">-->
+<!--    <img th:if="${user.avatar != null}" th:src="${user.avatar}" alt="avatar">-->
+<!--    <span th:if="${user.avatar == null}" th:text="${user.name.charAt(0)}">A</span>-->
+</div>
+<!--<div class="avatar" th:if="${user == null}">-->
+    <span>A</span>
+</div>
+<script>
+    /* 移动端侧边栏开关 */
+    const toggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    toggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+
+    /* 修改密码弹窗 */
+    function openPwdModal() {
+      document.getElementById('pwdModal').classList.add('open');
+    }
+    function closePwdModal() {
+      document.getElementById('pwdModal').classList.remove('open');
+    }
+    function checkPwd() {
+      const np1 = document.querySelector('[name=newPwd]').value;
+      const np2 = document.getElementById('newPwd2').value;
+      if (np1 !== np2) {
+        alert('两次新密码不一致！');
+        return false;
+      }
+      return true;
+    }
+
+    /* 头像上传（前端预览 + 后端接口） */
+    function avatarChange(input, uploadUrl) {
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = input.parentElement.querySelector('img');
+        if (img) img.src = e.target.result;
+        else {
+          const avatar = input.parentElement.querySelector('.avatar');
+          avatar.innerHTML = `<img src="${e.target.result}" alt="avatar">`;
+        }
+      };
+      reader.readAsDataURL(file);
+
+      /* 可选：自动上传 */
+      const form = new FormData();
+      form.append('avatar', file);
+      fetch(uploadUrl, {method: 'POST', body: form})
+        .then(r => r.json())
+        .then(res => { if(res.ok) alert('头像已更新'); })
+        .catch(err => alert('上传失败'));
+    }
+</script>
 
 </body>
 </html>
