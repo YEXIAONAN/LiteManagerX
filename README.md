@@ -18,7 +18,7 @@ LMX 希望通过 **统一的结构、明确的规范和克制的设计**，让�
 
 * 提供 **Docker 化部署方案**
 * 支持 **macOS / Windows / Linux**
-* 不依赖复杂环境配置，拉起即可运行
+* 无需复杂环境配置，拉起即可运行
 
 ### 统一 📐
 
@@ -35,15 +35,15 @@ LMX 的重点不在功能数量，而在于：
 ### 请求路径规范 🔗
 
 * 全部使用小写字母
-* 单词之间使用中划线 `-`
+* 单词之间使用中划线 `_`
 * 路径尽量体现资源含义，而不是实现细节
 
 示例：
 
 ```
-/api/user/create
-/api/user/query
-/api/task/execute
+/get/
+/api/user/user_name
+/api/information/user
 ```
 
 ---
