@@ -1,0 +1,1 @@
+const inc=target>50?target/90:target/60;
