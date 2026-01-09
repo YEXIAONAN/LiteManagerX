@@ -1,18 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>TestPage</title>
 </head>
 <body>
 
-<script>
-    (async () => {
-      const res = await fetch("http://localhost:8080/test").then(res => res.text())
-      document.body.innerHTML = res
-    })()
-    console.log("Hello World")
-</script>
+<h1>Welcome to LMX - TestPage</h1>
+
+<p>访问 用户: <span th:text="${user_name}"></span></p>
+<p>访问 IP：<span th:text="${user_ip}"></span></p>
+
+
+<!--<script>-->
+<!--    (async () => {-->
+<!--      const res = await fetch("http://localhost:8080/test").then(res => res.text())-->
+<!--      document.body.innerHTML = res-->
+<!--    })()-->
+<!--    console.log("Hello World")-->
+<!--</script>-->
 
 
 
