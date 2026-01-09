@@ -26,8 +26,8 @@ public class RouterController {
         return "DataBaseSearch";
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return "testPage";
-    }
+//    @GetMapping("/test")
+//    public String test() {
+//        return "testPage";
+//    }
 }
