@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 @Controller
 public class PageController {
 
@@ -56,7 +59,21 @@ public class PageController {
 
     // 主页面
     @GetMapping("/dashboard")
-    public String dashboard(HttpSession session) {
+    public String dashboard(HttpServletRequest request, HttpSession session, Model model) {
+
+        String User_Name = "admin";
+        String User_Age = "18";
+        String User_Phone = "13800138000";
+        String User_IP = request.getRemoteAddr();
+        String User_Email = "litecloud@litecloud.com";
+
+        model.addAttribute("User_Name",User_Name);
+        model.addAttribute("User_Age",User_Age);
+        model.addAttribute("User_Phone",User_Phone);
+        model.addAttribute("User_IP",User_IP);
+        model.addAttribute("User_Email",User_Email);
+
+
 
         Object loginUser = session.getAttribute("loginUser");
         if (loginUser == null) {
