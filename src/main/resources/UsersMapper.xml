@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xn.lmx.Mapper.UsersMapper">
+<!--
+ select:    查询
+ update:    修改
+ delete:    删除
+ insert:    增加
+
+ id对应接口里面的方法名称 login
+
+ resultType: 当表中的字段和类中的属性一致时，用resultType返回
+
+ 如果表中的字段与类中的属性不一致时，用resultMap
+ -->
+
+
+    <resultMap id="a" type="com.xn.lmx.Entity.Users">
+        <id property="uId" column="U_id"></id>
+        <result property="uName" column="U_name"></result>
+        <result property="uPassword" column="U_password"></result>
+        <result property="uGender" column="U_gender"></result>
+        <result property="uPhone" column="U_phone"></result>
+        <result property="uGroup" column="U_group"></result>
+    </resultMap>
+    <select id = "login" resultMap="a">
+        select * from User where U_name =#{name}
+    </select>
+
+</mapper>

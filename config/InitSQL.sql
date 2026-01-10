@@ -26,13 +26,13 @@ USE LiteManagerX;
 -- ===============================
 -- 创建用户表
 -- ===============================
-CREATE TABLE user (
-                      id INT AUTO_INCREMENT PRIMARY KEY,      -- 用户ID，自增主键
-                      user_name VARCHAR(20) NOT NULL,        -- 用户名
-                      user_password VARCHAR(255) NOT NULL,   -- 密码
-                      user_gender CHAR(1),                   -- 性别，M/F
-                      user_phone VARCHAR(15),                -- 电话，VARCHAR 避免丢失前导零
-                      user_group VARCHAR(10)                 -- 用户分组/角色
+CREATE TABLE User (
+    U_id INT AUTO_INCREMENT PRIMARY KEY,      -- 用户ID，自增主键
+    U_name VARCHAR(20) NOT NULL,        -- 用户名
+    U_password VARCHAR(255) NOT NULL,   -- 密码
+    U_gender CHAR(1),                   -- 性别，M/F
+    U_phone VARCHAR(15),                -- 电话，VARCHAR 避免丢失前导零
+    U_group VARCHAR(10)                 -- 用户分组/角色
 );
 
 -- ===============================
@@ -40,4 +40,5 @@ CREATE TABLE user (
 -- ===============================
 INSERT INTO user (user_name, user_password, user_gender, user_phone, user_group)
 VALUES ('admin', 'Admin#123..', 'M', '13800000000', 'admin');
+VALUES ('user', 'Admin#123..', 'M', '13800000001', 'user');
 -- 创建一个默认管理员账户，密码为明文，生产环境建议加密
